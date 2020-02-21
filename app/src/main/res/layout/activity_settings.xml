@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".ActivityCommonSettings">
+
+    <include layout="@layout/common_toolbar"
+        android:id="@+id/toolbar_container"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/toolbar_container"
+        android:id="@+id/reset_container">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/ip_reset_description"
+            android:textSize="17sp"
+            android:textColor="@android:color/black"
+            android:id="@+id/tv_reset_description"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="left"/>
+
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="35dp"
+            android:layout_below="@+id/tv_reset_description"
+            android:text="@string/bt_reset"
+            android:textSize="14sp"
+            android:id="@+id/bt_reset_status"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/bg_rounded"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/reset_container"
+        android:layout_margin="10dp"
+        android:text="@string/ip_description"
+        android:textSize="17sp"
+        android:textColor="@android:color/black"
+        android:id="@+id/tv_description"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="left"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/tv_description"
+        android:id="@+id/ip_container"
+        android:focusableInTouchMode="true">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tip_ip"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/bt_set_ip"
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ip_hint"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/bt_set_ip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/ic_outline_done_24px" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ip_container"
+        android:layout_margin="10dp"
+        android:text="@string/server_description"
+        android:textSize="17sp"
+        android:textColor="@android:color/black"
+        android:id="@+id/tv_server_description"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="12dp"
+        android:gravity="left"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/tv_server_description"
+        android:id="@+id/ip_server_container"
+        android:focusableInTouchMode="true">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tip_server_ip"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/bt_set_server_ip"
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ip_hint"
+                android:maxLines="1"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/bt_set_server_ip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/ic_outline_done_24px" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ip_server_container">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/update_token_description"
+            android:textSize="17sp"
+            android:textColor="@android:color/black"
+            android:id="@+id/tv_token_title"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="12dp"
+            android:gravity="left"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/tv_token_title"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/fl_container">
+
+            <Button
+                android:layout_width="70dp"
+                android:layout_height="35dp"
+                android:text= "@string/bt_update"
+                android:textSize="14sp"
+                android:id="@+id/bt_update_token"
+                android:background="@drawable/bg_rounded"/>
+
+            <ProgressBar
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:id="@+id/pb_indication"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+        </FrameLayout>
+
+
+
+    </RelativeLayout>
+
+
+
+
+
+</RelativeLayout>

@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">PoolTronik</string>
+    <string name="ip_description">If your home network IP-addressing was changed(you have changed
+        your internet provider or you have been starting to use the new modem) you can manually set
+        the new IP address of your controller</string>
+    <string name="ip_reset_description">This action reset all buttons state indication, in your app, to the state off.\nThis action
+         will not affect the controller itself</string>
+    <string name="server_description">Set your local server IP address</string>
+    <string name="reset">Reset</string>
+    <string name="error_msg">Something went wrong</string>
+    <string name="common_setting">Common Settings</string>
+    <string name="relay_setting">Relay Settings</string>
+    <string name="def_relay_name">Relay</string>
+    <string name="ip_incorrect">Invalid IP</string>
+    <string name="ip_hint">Your current IP is</string>
+    <string name="ip_hint_error">You have not set an IP address</string>
+    <string name="edit_relay_title">Tap for order to change the relay status</string>
+    <string name="edit_relay_name_title">Set name of the current relay</string>
+    <string name="menu_apply">Apply</string>
+    <string name="relay_name">Name of the Relay</string>
+    <string name="done">Done</string>
+    <string name="tagline">Pool automatic devices</string>
+    <string name="alert_txt">Attention water is leaking</string>
+    <string name="bt_update">Update</string>
+    <string name="bt_reset">Reset</string>
+    <string name="ip_server_error">You have not set an IP address for the local server</string>
+    <string name="finished_with_ok">Done</string>
+    <string name="update_token_description">Update push notification token (from the local network only)</string>
+    <string name="user_attention">Attention you have to update your token.(Tap here)</string>
+</resources><!--<string name="ip_reset_description">This action will reset all indication button in your app to settings by default (set to off).\nThis action
+             will not affect on the controller itself</string>-->
+

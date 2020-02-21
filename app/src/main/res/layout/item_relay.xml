@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_community"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardBackgroundColor="#FFFFFF"
+    android:layout_margin="4dp"
+    card_view:cardCornerRadius="14dp"
+    card_view:cardElevation="5dp">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_icons8_settings"
+        android:id="@+id/iv_settings"
+        android:layout_marginTop="7dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentRight="true"/>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/bg_button_container"
+        android:id="@+id/fl_container">
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_button_1"
+        android:layout_gravity="center"
+        android:id="@+id/bt_on_off"
+        />
+
+        <ProgressBar
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:id="@+id/pb_indication"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+    </FrameLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:id="@+id/tv_relay_name"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/fl_container"
+        android:layout_marginLeft="10dp"
+        android:textColor="@color/main_text_color"
+        tools:text = "ssss"/>
+
+</RelativeLayout>
+</androidx.cardview.widget.CardView>
