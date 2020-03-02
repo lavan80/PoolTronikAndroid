@@ -38,5 +38,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.firebase:firebase-core:17.0.0'
     implementation 'com.google.firebase:firebase-messaging:19.0.1'
+    implementation 'joda-time:joda-time:2.10.5'
 }
 apply plugin: 'com.google.gms.google-services'

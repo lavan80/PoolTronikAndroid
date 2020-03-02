@@ -35,6 +35,7 @@
     <string name="saturday">Sat</string>
     <string name="sunday">Sun</string>
     <string name="repeat">Repeat</string>
+    <string name="today">Today</string>
 </resources><!--<string name="ip_reset_description">This action will reset all indication button in your app to settings by default (set to off).\nThis action
              will not affect on the controller itself</string>-->
 
