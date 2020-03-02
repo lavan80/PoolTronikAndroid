@@ -166,6 +166,11 @@ public class MainActivity extends AppCompatActivity {
                     Intent aIntent = new Intent(MainActivity.this,ActivityCommonSettings.class);
                     startActivity(aIntent);
                     break;
+                case R.id.iv_schedule:
+                    Intent sIntent = new Intent(MainActivity.this,ActivityScheduling.class);
+                    sIntent.putExtra(StringUtils.EXTRA_DATA, relayStatus);
+                    startActivity(sIntent);
+                    break;
             }
         }
     }

@@ -93,6 +93,7 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
         relayViewHolder.ivSettings.setTag(relayStatus);
         relayViewHolder.ivSettings.setOnClickListener(onClickListener);
         relayViewHolder.ivSwitch.setOnClickListener(onClickListener);
+        relayViewHolder.ivSchedule.setOnClickListener(onClickListener);
     }
 
     public void itemChanged(int position, int status) {
@@ -118,6 +119,7 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
         TextView textView;
         ImageButton ivSwitch;
         ImageView ivSettings;
+        ImageView ivSchedule;
         ProgressBar progressBar;
 
         public RelayViewHolder(@NonNull View itemView) {
@@ -126,6 +128,7 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
             ivSwitch = itemView.findViewById(R.id.bt_on_off);
             progressBar = itemView.findViewById(R.id.pb_indication);
             ivSettings = itemView.findViewById(R.id.iv_settings);
+            ivSchedule = itemView.findViewById(R.id.iv_schedule);
         }
     }
 }

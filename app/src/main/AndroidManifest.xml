@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-
+        <activity android:name=".ActivityScheduling"></activity>
 
         <service
             android:name=".AppJobService"
@@ -48,16 +48,14 @@
         </activity>
         <activity
             android:name=".ActivityCommonSettings"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop"
-            />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".RelaySettingActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".AllertActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
         <service android:name=".MyFirebaseMessagingService">
             <intent-filter>
