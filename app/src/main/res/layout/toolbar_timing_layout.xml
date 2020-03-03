@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_alignParentLeft="true"
+        android:text="@string/save"
+        android:id="@+id/tv_timing_save"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_alignParentRight="true"
+        android:text="@string/cancel"
+        android:id="@+id/tv_timing_cancel"
+        android:textColor="@android:color/white"
+        android:layout_marginRight="20dp"/>
+
+</RelativeLayout>

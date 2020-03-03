@@ -36,6 +36,11 @@
     <string name="sunday">Sun</string>
     <string name="repeat">Repeat</string>
     <string name="today">Today</string>
+    <string name="save">SAVE</string>
+    <string name="cancel">CANCEL</string>
+    <string name="date">Date</string>
+    <string name="error_timing1">For order to save, please define a time (hour/minute)</string>
+    <string name="each_day">Fulfill each day</string>
 </resources><!--<string name="ip_reset_description">This action will reset all indication button in your app to settings by default (set to off).\nThis action
              will not affect on the controller itself</string>-->
 

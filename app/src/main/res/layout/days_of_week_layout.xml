@@ -13,6 +13,7 @@
         android:text="@string/monday"
         android:id="@+id/tv_monday"
         android:gravity="center"
+        android:hint="1"
         />
     <TextView
         android:layout_width="0dp"
@@ -20,41 +21,47 @@
         android:layout_weight="0.143"
         android:text="@string/tuesday"
         android:id="@+id/tv_tuesday"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:hint="2"/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.143"
         android:text="@string/wednesday"
         android:id="@+id/tv_wednesday"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:hint="3"/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.143"
         android:text="@string/thursday"
         android:id="@+id/tv_thursday"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:hint="4"/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.143"
         android:text="@string/friday"
         android:id="@+id/tv_friday"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:hint="5"/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.143"
         android:text="@string/saturday"
         android:id="@+id/tv_saturday"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:hint="6"/>
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.143"
         android:text="@string/sunday"
         android:id="@+id/tv_sunday"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:hint="7"/>
 
 </LinearLayout>

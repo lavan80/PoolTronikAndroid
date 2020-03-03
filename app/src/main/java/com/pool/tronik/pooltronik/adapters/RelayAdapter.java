@@ -94,6 +94,7 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
         relayViewHolder.ivSettings.setOnClickListener(onClickListener);
         relayViewHolder.ivSwitch.setOnClickListener(onClickListener);
         relayViewHolder.ivSchedule.setOnClickListener(onClickListener);
+        relayViewHolder.ivSchedule.setTag(relayStatus);
     }
 
     public void itemChanged(int position, int status) {

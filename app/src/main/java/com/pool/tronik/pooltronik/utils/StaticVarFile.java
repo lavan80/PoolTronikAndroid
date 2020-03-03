@@ -6,4 +6,9 @@ public class StaticVarFile {
     public static final int SEND_TOKEN = 1;
 
     public static final String PLATFORM_ANDROID = "android";
+
+    public enum RELAY_STATUS {
+        ON, OFF, REMOVE
+    }
+
 }
