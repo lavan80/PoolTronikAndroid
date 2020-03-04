@@ -1,11 +1,17 @@
 package com.pool.tronik.pooltronik;
 
 import android.graphics.Color;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -13,20 +19,37 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.pool.tronik.pooltronik.adapters.RelayAdapter;
+import com.pool.tronik.pooltronik.adapters.ScheduledTaskAdapter;
+import com.pool.tronik.pooltronik.dto.PTScheduleDate;
+import com.pool.tronik.pooltronik.net.GetTasksRequest;
 import com.pool.tronik.pooltronik.utils.ColorUtils;
 import com.pool.tronik.pooltronik.utils.FileUtil;
+import com.pool.tronik.pooltronik.utils.IntentHelper;
 import com.pool.tronik.pooltronik.utils.RelayConfig;
 import com.pool.tronik.pooltronik.utils.RelayStatus;
 import com.pool.tronik.pooltronik.utils.StringUtils;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RelaySettingActivity extends AppCompatActivity {
 
     private ImageButton ivStatus, ivStatusEditable;
     private RelayStatus relayStatus;
-    private TextView tvRelayName;
+    private TextView tvRelayName, tvEmptyText;
+    private ImageView ivSchedule;
     private TextInputLayout tilRelayName;
+    private RecyclerView recyclerView;
+    private ScheduledTaskAdapter scheduledTaskAdapter;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +61,8 @@ public class RelaySettingActivity extends AppCompatActivity {
             finish();
             return;
         }
+        GetTasksRequest getTasksRequest = new GetTasksRequest(new MCallback(), relayStatus.getRelay());
+        getTasksRequest.call();
         findViewById(R.id.iv_settings).setVisibility(View.GONE);
         ivStatus = findViewById(R.id.bt_on_off);
         ivStatusEditable = findViewById(R.id.bt_on_off_editable);
@@ -45,6 +70,16 @@ public class RelaySettingActivity extends AppCompatActivity {
         tvRelayName = findViewById(R.id.tv_relay_name);
         tilRelayName = findViewById(R.id.til_relay_name);
         tilRelayName.getEditText().addTextChangedListener(new MTextInputListener());
+        recyclerView = findViewById(R.id.rv_task_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
+        scheduledTaskAdapter = new ScheduledTaskAdapter(relayStatus.getName());
+        recyclerView.setAdapter(scheduledTaskAdapter);
+        ivSchedule = findViewById(R.id.iv_schedule);
+        tvEmptyText = findViewById(R.id.tv_empty_text);
+        progressBar = findViewById(R.id.pb_tasks);
+        ivSchedule.setOnClickListener(new MClickListener());
         setDefValue();
     }
 
@@ -102,6 +137,19 @@ public class RelaySettingActivity extends AppCompatActivity {
         ColorUtils.setColor(ivStatus, relayStatus.getStatus());
     }
 
+    public void setEmptyText(boolean isEmpty) {
+        if (isEmpty){
+            recyclerView.setVisibility(View.GONE);
+            tvEmptyText.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+        }
+        else {
+            recyclerView.setVisibility(View.VISIBLE);
+            tvEmptyText.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
     class MClickListener implements View.OnClickListener {
 
         @Override
@@ -114,8 +162,31 @@ public class RelaySettingActivity extends AppCompatActivity {
                         relayStatus.setStatus(RelayConfig.STATUS_OFF);
                     changeStatusColor();
                     break;
+                case R.id.iv_schedule:
+                    startActivity(IntentHelper.getIntent(RelaySettingActivity.this, ActivityScheduling.class, relayStatus));
+                    break;
             }
         }
+    }
+
+    public void showSnackBar(String string) {
+        final Snackbar snackbar = Snackbar
+                .make(findViewById(R.id.ll_top_parent), string, Snackbar.LENGTH_INDEFINITE);
+        try {
+            View snackBarView = snackbar.getView();
+            TextView snackTextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text);
+            snackTextView.setMaxLines(3);
+        } catch (Exception e){}
+
+        snackbar.show();
+        snackbar.setAction(getResources().getString(R.string.dismiss), new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        });
+
+        snackbar.show();
     }
 
     class MTextInputListener implements TextWatcher {
@@ -135,5 +206,43 @@ public class RelaySettingActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {
 
         }
-    } //addTextChangedListener(new TextWatcher()
+    }
+
+    class MCallback implements Callback<List<PTScheduleDate>> {
+
+
+        @Override
+        public void onResponse(Call<List<PTScheduleDate>> call, Response<List<PTScheduleDate>> response) {
+
+            if (isAlive()) {
+                if (response.isSuccessful()) {
+                    List<PTScheduleDate> list = response.body();
+                    if (list.isEmpty()) {
+                        setEmptyText(true);
+                    }
+                    else {
+                        setEmptyText(false);
+                        scheduledTaskAdapter.setData(list);
+                    }
+                }
+                else
+                    setEmptyText(true);
+            }
+
+        }
+
+        @Override
+        public void onFailure(Call<List<PTScheduleDate>> call, Throwable t) {
+
+            if (isAlive()){
+                setEmptyText(false);
+                showSnackBar(getResources().getString(R.string.error2));
+            }
+
+        }
+
+        private boolean isAlive() {
+            return RelaySettingActivity.this != null && !isFinishing();
+        }
+    }
 }

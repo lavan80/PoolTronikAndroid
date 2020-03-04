@@ -11,4 +11,8 @@ public class StaticVarFile {
         ON, OFF, REMOVE
     }
 
+    public enum DurationStatus {
+        ALWAYS, ITERATION
+    }
+
 }

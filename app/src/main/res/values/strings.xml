@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PoolTronik</string>
+    <string name="app_name">PoolTronic</string>
     <string name="ip_description">If your home network IP-addressing was changed(you have changed
         your internet provider or you have been starting to use the new modem) you can manually set
         the new IP address of your controller</string>
@@ -41,6 +41,13 @@
     <string name="date">Date</string>
     <string name="error_timing1">For order to save, please define a time (hour/minute)</string>
     <string name="each_day">Fulfill each day</string>
+    <string name="please_wait">Please wait </string>
+    <string name="error2">Something went wrong. Please make sure you stay in the local network where PoolTronic system was installed</string>
+    <string name="dismiss">DISMISS</string>
+    <string name="schedule_item">You did not set any task yet</string>
+    <string name="delete">Delete</string>
+    <string name="constantly">Constantly</string>
+    <string name="once">Once</string>
 </resources><!--<string name="ip_reset_description">This action will reset all indication button in your app to settings by default (set to off).\nThis action
              will not affect on the controller itself</string>-->
 

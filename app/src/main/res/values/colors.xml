@@ -5,4 +5,5 @@
         <color name="colorAccent">#D81B60</color>
         <color name="main_text_color">#000000</color>
         <color name="transparent">@android:color/transparent</color>
+        <color name="wait_bg">#E4DEDD</color>
 </resources>

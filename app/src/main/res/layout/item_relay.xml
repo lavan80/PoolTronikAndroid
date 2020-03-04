@@ -5,7 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_item_community"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="100dp"
     card_view:cardBackgroundColor="#FFFFFF"
     android:layout_margin="4dp"
     card_view:cardCornerRadius="14dp"
@@ -13,7 +13,7 @@
 
 <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     >
     <ImageView
         android:layout_width="wrap_content"
@@ -57,10 +57,10 @@
         android:textSize="24sp"
         android:id="@+id/tv_relay_name"
         android:layout_centerInParent="true"
-        android:layout_below="@+id/fl_container"
         android:layout_marginLeft="10dp"
         android:textColor="@color/main_text_color"
         tools:text = "ssss"/>
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

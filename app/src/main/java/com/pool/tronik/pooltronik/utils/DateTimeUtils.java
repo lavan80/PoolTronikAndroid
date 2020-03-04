@@ -4,12 +4,9 @@ import android.content.Context;
 
 import com.pool.tronik.pooltronik.R;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -103,5 +100,11 @@ public class DateTimeUtils {
     public static int getCurrentMonth() {
         LocalDateTime localDateTime = LocalDateTime.now();
         return localDateTime.getMonthOfYear();
+    }
+
+    public static LocalDateTime createLocalDateTime(String date) {
+        LocalDateTime localDateTime = new LocalDateTime(date);
+        //DateTime customDateTimeFromString = new DateTime("2018-05-05T10:11:12.123");
+        return localDateTime;
     }
 }

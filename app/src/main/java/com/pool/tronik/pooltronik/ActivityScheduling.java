@@ -1,12 +1,6 @@
 package com.pool.tronik.pooltronik;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.appcompat.widget.Toolbar;
-
 import android.app.DatePickerDialog;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,24 +8,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.pool.tronik.pooltronik.dto.PTScheduleDate;
+import com.pool.tronik.pooltronik.net.TaskNetRequest;
 import com.pool.tronik.pooltronik.utils.DateTimeContainer;
 import com.pool.tronik.pooltronik.utils.DateTimeUtils;
 import com.pool.tronik.pooltronik.utils.RelayStatus;
 import com.pool.tronik.pooltronik.utils.StaticVarFile;
 import com.pool.tronik.pooltronik.utils.StringUtils;
 
-import org.joda.time.DateTime;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ActivityScheduling extends AppCompatActivity implements View.OnClickListener {
 
     private TimePicker timePicker;
     private TextView tvChoseDate;
     private TextView tvRelayName;
+    private TextView tvSave, tvCancel;
+    private ProgressBar progressBar;
     private DateTimeContainer dateTimeContainer;
     private RelayStatus relayStatus;
     private String defDate;
@@ -84,16 +89,14 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
 
     public void initToolbar() {
         View view = getLayoutInflater().inflate(R.layout.toolbar_timing_layout, null);
-        view.findViewById(R.id.tv_timing_save).setOnClickListener(this);
-        view.findViewById(R.id.tv_timing_cancel).setOnClickListener(this);
+        tvSave = view.findViewById(R.id.tv_timing_save);
+        tvCancel = view.findViewById(R.id.tv_timing_cancel);
+        progressBar = view.findViewById(R.id.pb_title);
+        tvSave.setOnClickListener(this);
+        tvCancel.setOnClickListener(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.addView(view);
-        //toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
-        /*ActionBar actionbar = getSupportActionBar();
-        actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setHomeAsUpIndicator(R.drawable.ic_outline_arrow_back_24px);
-        setTitle(R.string.common_setting);*/
     }
 
     @Override
@@ -114,13 +117,49 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
 
     }
 
+    public void changeTitleState(boolean isWait) {
+        if (isWait) {
+            tvCancel.setVisibility(View.INVISIBLE);
+            tvSave.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        else {
+            tvCancel.setVisibility(View.VISIBLE);
+            tvSave.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    public void showSnackBar(String string) {
+        final Snackbar snackbar = Snackbar
+                .make(findViewById(R.id.ll_top_parent), string, Snackbar.LENGTH_INDEFINITE);
+        try {
+            View snackBarView = snackbar.getView();
+            TextView snackTextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text);
+            snackTextView.setMaxLines(3);
+        } catch (Exception e){}
+
+        snackbar.show();
+        snackbar.setAction(getResources().getString(R.string.dismiss), new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        });
+
+        snackbar.show();
+    }
+
     public void save() {
         if (dateTimeContainer.getHour() == -1 || dateTimeContainer.getMinutes() == -1) {
             Toast.makeText(this,getResources().getString(R.string.error_timing1),Toast.LENGTH_LONG).show();
         }
         else {
+            changeTitleState(true);
             Log.d("RFVGTM", "localtime = " + DateTimeUtils.getLocalDateTime(dateTimeContainer));
-            getPTScheduleDate();
+            PTScheduleDate ptScheduleDate = getPTScheduleDate();
+            TaskNetRequest taskNetRequest = new TaskNetRequest(new MCallback(),ptScheduleDate);
+            taskNetRequest.call();
         }
     }
 
@@ -159,18 +198,6 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
                 dateTimeContainer.addRepeat(Integer.parseInt(textView.getHint().toString()));
             }
         }
-
-        /*if (dateTimeContainer.getRepeatList().size() == 7) {
-            tvChoseDate.setText(getResources().getString(R.string.each_day));
-        }
-        else {
-            String days = DateTimeUtils.getDayOfWeek(dateTimeContainer.getRepeatList(), this);
-            if (days.isEmpty()) {
-                tvChoseDate.setText(defDate);
-            } else {
-                tvChoseDate.setText(defDate + " " + days);
-            }
-        }*/
         tvChoseDate.setText(getRepetition());
         view.setBackground(drawable);
     }
@@ -212,6 +239,29 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
                     ActivityScheduling.this)+", "+dayOfMonth;
             tvChoseDate.setText(getRepetition());
 
+        }
+    }
+
+    class MCallback implements Callback<Boolean> {
+
+        @Override
+        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+            if (isAlive()) {
+                changeTitleState(false);
+                Toast.makeText(ActivityScheduling.this,getResources().getString(R.string.done), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<Boolean> call, Throwable t) {
+            if (isAlive()) {
+                changeTitleState(false);
+                showSnackBar(getResources().getString(R.string.error2));
+            }
+        }
+
+        private boolean isAlive() {
+            return ActivityScheduling.this == null || isFinishing();
         }
     }
 
