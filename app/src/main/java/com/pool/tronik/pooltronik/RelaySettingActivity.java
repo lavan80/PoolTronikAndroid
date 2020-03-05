@@ -1,17 +1,7 @@
 package com.pool.tronik.pooltronik;
 
 import android.graphics.Color;
-
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -23,9 +13,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.pool.tronik.pooltronik.adapters.RelayAdapter;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.pool.tronik.pooltronik.adapters.ScheduledTaskAdapter;
 import com.pool.tronik.pooltronik.dto.PTScheduleDate;
+import com.pool.tronik.pooltronik.net.DeleteTaskRequest;
 import com.pool.tronik.pooltronik.net.GetTasksRequest;
 import com.pool.tronik.pooltronik.utils.ColorUtils;
 import com.pool.tronik.pooltronik.utils.FileUtil;
@@ -74,7 +73,7 @@ public class RelaySettingActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
-        scheduledTaskAdapter = new ScheduledTaskAdapter(relayStatus.getName());
+        scheduledTaskAdapter = new ScheduledTaskAdapter(new MClickListener(), relayStatus.getName());
         recyclerView.setAdapter(scheduledTaskAdapter);
         ivSchedule = findViewById(R.id.iv_schedule);
         tvEmptyText = findViewById(R.id.tv_empty_text);
@@ -165,6 +164,15 @@ public class RelaySettingActivity extends AppCompatActivity {
                 case R.id.iv_schedule:
                     startActivity(IntentHelper.getIntent(RelaySettingActivity.this, ActivityScheduling.class, relayStatus));
                     break;
+                case R.id.bt_item_delete:
+                    PTScheduleDate ptScheduleDate = (PTScheduleDate) view.getTag();
+                    if (ptScheduleDate != null) {
+                        scheduledTaskAdapter.addToInProgress(ptScheduleDate.getId());
+                        DeleteTaskRequest deleteTaskRequest = new DeleteTaskRequest(new CallbackDelete(ptScheduleDate.getId()),
+                                ptScheduleDate.getId());
+                        deleteTaskRequest.call();
+                    }
+                    break;
             }
         }
     }
@@ -244,5 +252,38 @@ public class RelaySettingActivity extends AppCompatActivity {
         private boolean isAlive() {
             return RelaySettingActivity.this != null && !isFinishing();
         }
+    }
+
+    class CallbackDelete implements Callback<Boolean> {
+
+        private int id;
+
+        public CallbackDelete(int id) {
+            this.id = id;
+        }
+
+        @Override
+        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+            if (isAlive()){
+                scheduledTaskAdapter.deleteFromInProgress(id);
+                scheduledTaskAdapter.deleteItem(id);
+                scheduledTaskAdapter.notifyDataSetChanged();
+            }
+
+        }
+
+        @Override
+        public void onFailure(Call<Boolean> call, Throwable t) {
+            if (isAlive()){
+                scheduledTaskAdapter.deleteFromInProgress(id);
+                scheduledTaskAdapter.notifyDataSetChanged();
+                showSnackBar(getResources().getString(R.string.error2));
+            }
+        }
+
+        private boolean isAlive() {
+            return RelaySettingActivity.this != null && !isFinishing();
+        }
+
     }
 }

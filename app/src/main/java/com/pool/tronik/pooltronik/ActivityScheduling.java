@@ -261,7 +261,7 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
         }
 
         private boolean isAlive() {
-            return ActivityScheduling.this == null || isFinishing();
+            return ActivityScheduling.this != null && !isFinishing();
         }
     }
 

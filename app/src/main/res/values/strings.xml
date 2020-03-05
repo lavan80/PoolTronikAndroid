@@ -48,6 +48,8 @@
     <string name="delete">Delete</string>
     <string name="constantly">Constantly</string>
     <string name="once">Once</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
 </resources><!--<string name="ip_reset_description">This action will reset all indication button in your app to settings by default (set to off).\nThis action
              will not affect on the controller itself</string>-->
 

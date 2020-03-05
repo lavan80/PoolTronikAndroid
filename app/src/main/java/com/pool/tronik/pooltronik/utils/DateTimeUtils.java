@@ -73,7 +73,7 @@ public class DateTimeUtils {
         String [] week = context.getResources().getStringArray(R.array.weeks);
         String str = "";
         try {
-            str = week[day];
+            str = week[day-1];
         }catch (Exception e){}
         return str;
     }

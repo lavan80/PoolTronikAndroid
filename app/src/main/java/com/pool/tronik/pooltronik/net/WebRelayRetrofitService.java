@@ -25,4 +25,7 @@ public interface WebRelayRetrofitService {
 
     @GET("tasks")
     Call<List<PTScheduleDate>> getTasks(@Query("relay") String relay);
+
+    @GET("tasks/delete")
+    Call<Boolean> removeTask(@Query("id") String id);
 }

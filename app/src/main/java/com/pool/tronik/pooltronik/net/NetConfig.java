@@ -4,6 +4,6 @@ public class NetConfig {
     public static String IP_PREFIX = "http://";
     public static String BASE_PORT = ":8080";
     public static String BASE_CONTROLLER_URL = IP_PREFIX + "192.168.1.199";
-    public static String BASE_SERVER_URL = IP_PREFIX + "192.168.0.105" + BASE_PORT +"/";
+    public static String BASE_SERVER_URL = IP_PREFIX + "192.168.0.101" + BASE_PORT +"/";
 
 }

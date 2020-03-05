@@ -9,6 +9,7 @@ import java.util.Objects;
  * Created by andreivasilevitsky on 16/06/2019.
  */
 public class PTScheduleDate implements Serializable{
+    private int id;
     private int relay;
     private int status;// off, on, remove
     private String startDate;
@@ -88,6 +89,15 @@ public class PTScheduleDate implements Serializable{
         this.repeatList = repeatList;
     }
 
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -97,11 +107,12 @@ public class PTScheduleDate implements Serializable{
                 status == that.status &&
                 duration == that.duration &&
                 iteration == that.iteration &&
-                startDate.equals(that.startDate);
+                startDate.equals(that.startDate) &&
+                id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(relay, status, startDate, duration, iteration);
+        return Objects.hash(relay, status, startDate, duration, iteration, id);
     }
 }

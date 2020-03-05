@@ -1,9 +1,10 @@
 package com.pool.tronik.pooltronik.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pool.tronik.pooltronik.R;
 import com.pool.tronik.pooltronik.dto.PTScheduleDate;
 import com.pool.tronik.pooltronik.utils.DateTimeUtils;
-import com.pool.tronik.pooltronik.utils.RelayStatus;
 import com.pool.tronik.pooltronik.utils.StaticVarFile;
 
 import org.joda.time.LocalDateTime;
@@ -24,10 +24,14 @@ public class ScheduledTaskAdapter extends RecyclerView.Adapter<ScheduledTaskAdap
 
     private List<PTScheduleDate> data;
     private String relayName;
+    private View.OnClickListener onClickListener;
+    private List<Integer> inProgressList;
 
-    public ScheduledTaskAdapter(String relayName) {
+    public ScheduledTaskAdapter(View.OnClickListener onClickListener, String relayName) {
         data = new ArrayList<>();
         this.relayName = relayName;
+        this.onClickListener = onClickListener;
+        inProgressList = new ArrayList<>();
     }
 
     @NonNull
@@ -41,19 +45,37 @@ public class ScheduledTaskAdapter extends RecyclerView.Adapter<ScheduledTaskAdap
     public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
 
         PTScheduleDate ptScheduleDate = data.get(position);
+        Context context = holder.tvRelayName.getContext();
         holder.tvRelayName.setText(relayName);
         LocalDateTime localDateTime = DateTimeUtils.createLocalDateTime(ptScheduleDate.getStartDate());
-        String date = DateTimeUtils.getDayOfWeek(localDateTime.getDayOfWeek(),holder.tvRelayName.getContext())
+        String date = DateTimeUtils.getDayOfWeek(localDateTime.getDayOfWeek(),context)
                 + " - "+localDateTime.getHourOfDay()+":"+localDateTime.getMinuteOfHour();
         holder.tvTime.setText(date);
+        String txt;
         if (ptScheduleDate.getDuration() == StaticVarFile.DurationStatus.ALWAYS.ordinal()) {
-            holder.tvDuration.setText(holder.tvRelayName.getContext().getResources().getString(R.string.constantly));
+            txt = context.getResources().getString(R.string.constantly);
         }
         else {
-            holder.tvDuration.setText(holder.tvRelayName.getContext().getResources().getString(R.string.once));
+            txt = context.getResources().getString(R.string.once);
         }
 
+        if (ptScheduleDate.getStatus() == StaticVarFile.RELAY_STATUS.OFF.ordinal())
+            txt += " ("+context.getResources().getString(R.string.off)+")";
+        else if (ptScheduleDate.getStatus() == StaticVarFile.RELAY_STATUS.OFF.ordinal())
+            txt += " ("+context.getResources().getString(R.string.on)+")";
+        holder.tvDuration.setText(txt);
 
+
+        if (!inProgressList.contains(ptScheduleDate.getId())) {
+            holder.btDelete.setVisibility(View.VISIBLE);
+            holder.progressBar.setVisibility(View.GONE);
+            holder.btDelete.setTag(ptScheduleDate);
+            holder.btDelete.setOnClickListener(onClickListener);
+        }
+        else {
+            holder.btDelete.setVisibility(View.GONE);
+            holder.progressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -66,12 +88,33 @@ public class ScheduledTaskAdapter extends RecyclerView.Adapter<ScheduledTaskAdap
         notifyDataSetChanged();
     }
 
+    public void addToInProgress(int id) {
+        if (!inProgressList.contains(id)) {
+            inProgressList.add(id);
+        }
+    }
+
+    public void deleteFromInProgress(int id) {
+        if (inProgressList.contains(id))
+            inProgressList.remove(Integer.valueOf(id));
+    }
+
+    public void deleteItem(int id) {
+        for (PTScheduleDate ptScheduleDate : data) {
+            if (ptScheduleDate.getId() == id) {
+                data.remove(ptScheduleDate);
+                break;
+            }
+        }
+    }
+
     public class TaskHolder extends RecyclerView.ViewHolder {
 
         TextView tvRelayName;
         TextView tvTime;
         TextView tvDuration;
-        Button btDelete;
+        TextView btDelete;
+        ProgressBar progressBar;
 
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
@@ -79,6 +122,7 @@ public class ScheduledTaskAdapter extends RecyclerView.Adapter<ScheduledTaskAdap
             tvTime = itemView.findViewById(R.id.tv_item_time);
             tvDuration = itemView.findViewById(R.id.tv_item_duration);
             btDelete = itemView.findViewById(R.id.bt_item_delete);
+            progressBar = itemView.findViewById(R.id.pb_remove);
         }
     }
 }
