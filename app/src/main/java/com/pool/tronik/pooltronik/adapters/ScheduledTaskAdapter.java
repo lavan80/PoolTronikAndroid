@@ -61,7 +61,7 @@ public class ScheduledTaskAdapter extends RecyclerView.Adapter<ScheduledTaskAdap
 
         if (ptScheduleDate.getStatus() == StaticVarFile.RELAY_STATUS.OFF.ordinal())
             txt += " ("+context.getResources().getString(R.string.off)+")";
-        else if (ptScheduleDate.getStatus() == StaticVarFile.RELAY_STATUS.OFF.ordinal())
+        else if (ptScheduleDate.getStatus() == StaticVarFile.RELAY_STATUS.ON.ordinal())
             txt += " ("+context.getResources().getString(R.string.on)+")";
         holder.tvDuration.setText(txt);
 
