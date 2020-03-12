@@ -19,7 +19,7 @@ public class GetTasksRequest {
     }
 
     public void call() {
-        if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX)) //?????
+        if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX))
             return;
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())

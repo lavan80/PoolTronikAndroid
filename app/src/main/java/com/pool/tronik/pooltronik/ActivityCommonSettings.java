@@ -36,19 +36,8 @@ public class ActivityCommonSettings extends AppCompatActivity implements View.On
         tilServer = findViewById(R.id.tip_server_ip);
         progressBar = findViewById(R.id.pb_indication);
         ipHintPrefix = getResources().getString(R.string.ip_hint) + " ";
-        String hintTxt = ipHintPrefix + FileUtil.getIp(this).substring(NetConfig.IP_PREFIX.length());
-        tilController.setHint(hintTxt);
-        if (FileUtil.getServerIp(this).substring(NetConfig.IP_PREFIX.length()).isEmpty()) {
-            hintTxt = getString(R.string.ip_hint_error);
-        }
-        else {
-            hintTxt = ipHintPrefix + FileUtil.getServerIp(this).substring(NetConfig.IP_PREFIX.length());
-            int index = hintTxt.indexOf(":");
-            if (index > -1) {
-                hintTxt = hintTxt.substring(0, index-1);
-            }
-        }
-        tilServer.setHint(hintTxt);
+        setCurrentIp(tilController,FileUtil.getIp(this));
+        setCurrentIp(tilServer,FileUtil.getServerIp(this));
         findViewById(R.id.bt_reset_status).setOnClickListener(this);
         findViewById(R.id.bt_set_ip).setOnClickListener(this);
         findViewById(R.id.bt_set_server_ip).setOnClickListener(this);
@@ -58,6 +47,21 @@ public class ActivityCommonSettings extends AppCompatActivity implements View.On
             Animation animation = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
             btUpdateToken.startAnimation(animation);
         }
+    }
+
+    public void setCurrentIp(TextInputLayout til, String ip){
+        String hintTxt;
+        if (ip.substring(NetConfig.IP_PREFIX.length()).isEmpty()) {
+            hintTxt = getString(R.string.ip_hint_error);
+        }
+        else {
+            hintTxt = ipHintPrefix + ip.substring(NetConfig.IP_PREFIX.length());
+            int index = hintTxt.indexOf(":");
+            if (index > -1) {
+                hintTxt = hintTxt.substring(0, index);
+            }
+        }
+        til.setHint(hintTxt);
     }
 
     @Override

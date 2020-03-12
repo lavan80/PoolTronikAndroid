@@ -24,9 +24,8 @@ public class DeleteTaskRequest {
                 .addNetworkInterceptor(new StethoInterceptor())
                 .build();
         //ScalarsConverterFactory GsonConverterFactory
-        //NetConfig.BASE_SERVER_URL is not empty!!!!
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(NetConfig.BASE_SERVER_URL)//"http://10.0.1.36:8080/"
+                .baseUrl(NetConfig.BASE_SERVER_URL)
                 .addConverterFactory(GsonConverterFactory.create(new Gson()))
                 .client(okHttpClient)
                 .build();
