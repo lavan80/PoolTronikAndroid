@@ -3,7 +3,6 @@ package com.pool.tronik.pooltronik;
 import android.app.DatePickerDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.pool.tronik.pooltronik.dto.PTScheduleDate;
@@ -25,10 +25,6 @@ import com.pool.tronik.pooltronik.utils.DateTimeUtils;
 import com.pool.tronik.pooltronik.utils.RelayStatus;
 import com.pool.tronik.pooltronik.utils.StaticVarFile;
 import com.pool.tronik.pooltronik.utils.StringUtils;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ActivityScheduling extends AppCompatActivity implements View.OnClickListener {
 
@@ -156,9 +152,8 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
         }
         else {
             changeTitleState(true);
-            Log.d("RFVGTM", "localtime = " + DateTimeUtils.getLocalDateTime(dateTimeContainer));
             PTScheduleDate ptScheduleDate = getPTScheduleDate();
-            TaskNetRequest taskNetRequest = new TaskNetRequest(new MCallback(),ptScheduleDate);
+            TaskNetRequest taskNetRequest = new TaskNetRequest(this, new MCallback(),ptScheduleDate);
             taskNetRequest.call();
         }
     }
@@ -230,7 +225,6 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
 
         @Override
         public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
-            Log.d("QSQSQS", "year="+year+"; monthOfYear="+monthOfYear+"; dayOfMonth="+dayOfMonth);
             dateTimeContainer.setYear(year);
             dateTimeContainer.setMonth(monthOfYear+1);
             dateTimeContainer.setDayOfMonth(dayOfMonth);
@@ -242,26 +236,18 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
         }
     }
 
-    class MCallback implements Callback<Boolean> {
+    class MCallback implements Observer<Object> {
 
         @Override
-        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-            if (isAlive()) {
-                changeTitleState(false);
-                Toast.makeText(ActivityScheduling.this,getResources().getString(R.string.done), Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<Boolean> call, Throwable t) {
-            if (isAlive()) {
+        public void onChanged(Object o) {
+            if (o instanceof Throwable) {
                 changeTitleState(false);
                 showSnackBar(getResources().getString(R.string.error2));
             }
-        }
-
-        private boolean isAlive() {
-            return ActivityScheduling.this != null && !isFinishing();
+            else {
+                changeTitleState(false);
+                Toast.makeText(ActivityScheduling.this,getResources().getString(R.string.done), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

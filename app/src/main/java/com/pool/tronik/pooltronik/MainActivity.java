@@ -4,24 +4,25 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-
-import com.google.android.material.internal.NavigationMenuView;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.internal.NavigationMenuView;
+import com.google.android.material.navigation.NavigationView;
 import com.pool.tronik.pooltronik.adapters.RelayAdapter;
 import com.pool.tronik.pooltronik.net.ControllerNetRequest;
 import com.pool.tronik.pooltronik.utils.FileUtil;
@@ -32,8 +33,6 @@ import com.pool.tronik.pooltronik.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay()-1,RelayConfig.STATUS_PENDING);
                     clickedList.add(relayStatus.getRelay());
-                    ControllerNetRequest netRequest = new ControllerNetRequest(relayStatus, new MCallback(relayStatus));
+                    ControllerNetRequest netRequest = new ControllerNetRequest(MainActivity.this, new MCallback(relayStatus),relayStatus);
                     netRequest.call();
                     //mockRequest(relayStatus);
                     break;
@@ -176,46 +175,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    class MCallback implements Callback<String>{
-
+    class MCallback implements Observer<Object> {
         RelayStatus relayStatus;
 
         MCallback(RelayStatus relayStatus){
             this.relayStatus = relayStatus;
         }
-
         @Override
-        public void onResponse(Call<String> call, Response<String> response) {
-            onComplete();
-            if(response.isSuccessful()) {
-                Log.d("YHYHJU","isSuccessful");
-                Object o = response.body();
-                String str = o.toString();
-                int status;
-                if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING && relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
-                    status = RelayConfig.STATUS_ON;
-                    FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);
-                }
-                else if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING && relayStatus.getRequestedStatus() == RelayConfig.STATUS_OFF) {
-                    status = RelayConfig.STATUS_OFF;
-                    FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), false);
-                }
-                else
-                    status = relayStatus.getStatus();
-                ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay()-1, status);
-            }
-            else {
+        public void onChanged(Object o) {
+            if (o instanceof Throwable) {
+                onComplete();
                 errorHandle();
             }
+            else {
+                onComplete();
+                Response<String> response = (Response<String>) o;
+                if(response.isSuccessful()) {
+                    Object body = response.body();
+                    String str = body.toString();
+                    int status;
+                    if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING && relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
+                        status = RelayConfig.STATUS_ON;
+                        FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);
+                    }
+                    else if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING && relayStatus.getRequestedStatus() == RelayConfig.STATUS_OFF) {
+                        status = RelayConfig.STATUS_OFF;
+                        FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), false);
+                    }
+                    else
+                        status = relayStatus.getStatus();
+                    ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay()-1, status);
+                }
+                else {
+                    errorHandle();
+                }
+            }
         }
-
-        @Override
-        public void onFailure(Call<String> call, Throwable t) {
-            onComplete();
-            errorHandle();
-        }
-
         public void onComplete() {
             clickedList.remove(new Integer(relayStatus.getRelay()));
         }

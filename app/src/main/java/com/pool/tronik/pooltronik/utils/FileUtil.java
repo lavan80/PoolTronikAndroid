@@ -92,18 +92,6 @@ public class FileUtil {
         editor.apply();
     }
 
-    public static void setRepetitionCounter(Context context,int repetitionCounter) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(REPETITION_FILE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("repetition_counter", repetitionCounter);
-        editor.apply();
-    }
-
-    public static int getRepetitionCounter(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(REPETITION_FILE, Context.MODE_PRIVATE);
-        return sharedPreferences.getInt("repetition_counter", 0);
-    }
-
     public static boolean isHaveToUpdateToken(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(REPETITION_FILE, Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean("is_have_update_token", false);

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,8 +36,6 @@ import com.pool.tronik.pooltronik.utils.StringUtils;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RelaySettingActivity extends AppCompatActivity {
@@ -60,7 +59,8 @@ public class RelaySettingActivity extends AppCompatActivity {
             finish();
             return;
         }
-        GetTasksRequest getTasksRequest = new GetTasksRequest(new MCallback(), relayStatus.getRelay());
+        GetTasksRequest getTasksRequest = new GetTasksRequest(this, new GetTasksObserver(), relayStatus.getRelay());
+
         getTasksRequest.call();
         findViewById(R.id.iv_settings).setVisibility(View.GONE);
         ivStatus = findViewById(R.id.bt_on_off);
@@ -168,8 +168,10 @@ public class RelaySettingActivity extends AppCompatActivity {
                     PTScheduleDate ptScheduleDate = (PTScheduleDate) view.getTag();
                     if (ptScheduleDate != null) {
                         scheduledTaskAdapter.addToInProgress(ptScheduleDate.getId());
-                        DeleteTaskRequest deleteTaskRequest = new DeleteTaskRequest(new CallbackDelete(ptScheduleDate.getId()),
-                                ptScheduleDate.getId());
+
+                        DeleteTaskRequest deleteTaskRequest = new DeleteTaskRequest(RelaySettingActivity.this,
+                                new DeleteObserver(ptScheduleDate.getId()),
+                             ptScheduleDate.getId());
                         deleteTaskRequest.call();
                     }
                     break;
@@ -187,12 +189,7 @@ public class RelaySettingActivity extends AppCompatActivity {
         } catch (Exception e){}
 
         snackbar.show();
-        snackbar.setAction(getResources().getString(R.string.dismiss), new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
+        snackbar.setAction(getResources().getString(R.string.dismiss), view -> snackbar.dismiss());
 
         snackbar.show();
     }
@@ -216,13 +213,38 @@ public class RelaySettingActivity extends AppCompatActivity {
         }
     }
 
-    class MCallback implements Callback<List<PTScheduleDate>> {
+    class DeleteObserver implements Observer<Object> {
 
+        int id;
+
+        DeleteObserver(int id) {
+            this.id = id;
+        }
 
         @Override
-        public void onResponse(Call<List<PTScheduleDate>> call, Response<List<PTScheduleDate>> response) {
+        public void onChanged(Object o) {
+            if (o instanceof Throwable) {
+                setEmptyText(false);
+                showSnackBar(getResources().getString(R.string.error2));
+            }
+            else {
+                scheduledTaskAdapter.deleteFromInProgress(id);
+                scheduledTaskAdapter.deleteItem(id);
+                scheduledTaskAdapter.notifyDataSetChanged();
+            }
+        }
+    }
 
-            if (isAlive()) {
+    class GetTasksObserver implements Observer<Object> {
+
+        @Override
+        public void onChanged(Object o) {
+            if (o instanceof Throwable) {
+                setEmptyText(false);
+                showSnackBar(getResources().getString(R.string.error2));
+            }
+            else {
+                Response<List<PTScheduleDate>> response = (Response<List<PTScheduleDate>>) o;
                 if (response.isSuccessful()) {
                     List<PTScheduleDate> list = response.body();
                     if (list.isEmpty()) {
@@ -236,54 +258,6 @@ public class RelaySettingActivity extends AppCompatActivity {
                 else
                     setEmptyText(true);
             }
-
         }
-
-        @Override
-        public void onFailure(Call<List<PTScheduleDate>> call, Throwable t) {
-
-            if (isAlive()){
-                setEmptyText(false);
-                showSnackBar(getResources().getString(R.string.error2));
-            }
-
-        }
-
-        private boolean isAlive() {
-            return RelaySettingActivity.this != null && !isFinishing();
-        }
-    }
-
-    class CallbackDelete implements Callback<Boolean> {
-
-        private int id;
-
-        public CallbackDelete(int id) {
-            this.id = id;
-        }
-
-        @Override
-        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-            if (isAlive()){
-                scheduledTaskAdapter.deleteFromInProgress(id);
-                scheduledTaskAdapter.deleteItem(id);
-                scheduledTaskAdapter.notifyDataSetChanged();
-            }
-
-        }
-
-        @Override
-        public void onFailure(Call<Boolean> call, Throwable t) {
-            if (isAlive()){
-                scheduledTaskAdapter.deleteFromInProgress(id);
-                scheduledTaskAdapter.notifyDataSetChanged();
-                showSnackBar(getResources().getString(R.string.error2));
-            }
-        }
-
-        private boolean isAlive() {
-            return RelaySettingActivity.this != null && !isFinishing();
-        }
-
     }
 }
