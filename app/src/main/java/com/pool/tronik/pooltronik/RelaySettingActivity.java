@@ -114,7 +114,7 @@ public class RelaySettingActivity extends AppCompatActivity {
     }
 
     private void proceed() {
-        FileUtil.setRelayName(this,RelayConfig.RELAY_LIST_ON.get(relayStatus.getRelay()-1),tvRelayName.getText().toString());
+        FileUtil.setRelayName(this,RelayConfig.RELAY_LIST_ON.get(relayStatus.getRelay()),tvRelayName.getText().toString());
         if (relayStatus.getStatus() == RelayConfig.STATUS_ON) {
             //relayStatus.setRequestedStatus(RelayConfig.STATUS_OFF);
             FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);

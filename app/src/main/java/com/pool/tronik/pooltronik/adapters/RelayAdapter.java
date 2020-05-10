@@ -36,7 +36,8 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
         String defName = context.getResources().getString(R.string.def_relay_name);
         for (int i = 0; i < RelayConfig.RELAYS_SIZE; i++) {
             RelayStatus relayStatus = new RelayStatus();
-            relayStatus.setRelay(i+1);
+            //relayStatus.setRelay(i+1);
+            relayStatus.setRelay(i);
             if (FileUtil.getRelayStatus(context,RelayConfig.RELAY_LIST_ON.get(i))) {
                 relayStatus.setStatus(RelayConfig.STATUS_ON);
             }
@@ -45,7 +46,7 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
             }
             String name = FileUtil.getRelayName(context, RelayConfig.RELAY_LIST_ON.get(i));
             if (name.equalsIgnoreCase(defName))
-                name += (i+1);
+                name += i;//name += (i+1);
             relayStatus.setName(name);
             statusList.add(relayStatus);
         }

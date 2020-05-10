@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                     if (clickedList.contains(relayStatus.getRelay())) {
                         return;
                     }
-                    ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay()-1,RelayConfig.STATUS_PENDING);
+                    ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(),RelayConfig.STATUS_PENDING);
                     clickedList.add(relayStatus.getRelay());
                     ControllerNetRequest netRequest = new ControllerNetRequest(MainActivity.this, new MCallback(relayStatus),relayStatus);
                     netRequest.call();
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else
                         status = relayStatus.getStatus();
-                    ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay()-1, status);
+                    ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(), status);
                 }
                 else {
                     errorHandle();
@@ -217,9 +217,9 @@ public class MainActivity extends AppCompatActivity {
 
         public void errorHandle() {
             if (relayStatus.getRequestedStatus() == RelayConfig.STATUS_OFF)
-                ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay()-1, RelayConfig.STATUS_ON);
+                ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(), RelayConfig.STATUS_ON);
             else
-                ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay()-1, RelayConfig.STATUS_OFF);
+                ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(), RelayConfig.STATUS_OFF);
             Toast.makeText(MainActivity.this,getString(R.string.error_msg), Toast.LENGTH_LONG).show();
         }
     }
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             else
                                 status = relayStatus.getStatus();
-                            ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay()-1, status);
+                            ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(), status);
                         }
                     });
                 }

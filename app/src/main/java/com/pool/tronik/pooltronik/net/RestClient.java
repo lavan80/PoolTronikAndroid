@@ -4,6 +4,7 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 
 import okhttp3.OkHttpClient;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -45,12 +46,31 @@ public class RestClient {
                 .build();
     }
 
+    //.addConverterFactory(ScalarsConverterFactory.create())
+
+    private void initRetrofit(String baseUrl, Converter.Factory factory) {
+        retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(factory)
+                .client(okHttpClient)
+                .build();
+    }
+
     public Retrofit getRetrofit(String baseUrl) {
 
         if (retrofit != null && retrofit.baseUrl().toString().contains(baseUrl))
             return retrofit;
 
         initRetrofit(baseUrl);
+        return retrofit;
+    }
+
+    public Retrofit getRetrofit(String baseUrl, Converter.Factory factory) {
+
+        if (retrofit != null && retrofit.baseUrl().toString().contains(baseUrl))
+            return retrofit;
+
+        initRetrofit(baseUrl, factory);
         return retrofit;
     }
 
