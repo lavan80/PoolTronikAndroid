@@ -228,7 +228,7 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
             dateTimeContainer.setYear(year);
             dateTimeContainer.setMonth(monthOfYear+1);
             dateTimeContainer.setDayOfMonth(dayOfMonth);
-            defDate = "Since "+DateTimeUtils.getDayOfWeek(
+            defDate = getResources().getString(R.string.since)+" "+DateTimeUtils.getDayOfWeek(
                     DateTimeUtils.getLocalDateTime(year, monthOfYear+1, dayOfMonth).getDayOfWeek(),
                     ActivityScheduling.this)+", "+dayOfMonth;
             tvChoseDate.setText(getRepetition());
