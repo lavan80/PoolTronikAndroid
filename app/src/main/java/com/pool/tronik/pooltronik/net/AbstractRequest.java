@@ -29,7 +29,7 @@ public abstract class AbstractRequest {
         mutableLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void emit(Object o) {
+    protected void emit(Object o) {
         mutableLiveData.setValue(o);
     }
 

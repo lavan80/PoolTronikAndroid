@@ -14,18 +14,25 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.pool.tronik.pooltronik.dto.ControllerEntity;
+import com.pool.tronik.pooltronik.net.AbstractRequest;
 import com.pool.tronik.pooltronik.net.NetConfig;
+import com.pool.tronik.pooltronik.net.SetControllerIpRequest;
 import com.pool.tronik.pooltronik.utils.FileUtil;
 import com.pool.tronik.pooltronik.utils.ITokenCallBack;
+
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 public class ActivityCommonSettings extends AppCompatActivity implements View.OnClickListener, ITokenCallBack {
 
     private TextInputLayout tilController, tilServer;
     private String ipHintPrefix = "";
-    private Button btUpdateToken;
-    private ProgressBar progressBar;
+    private Button btUpdateToken, btUpdateIp;
+    private ProgressBar progressBar, progressBarForIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,7 @@ public class ActivityCommonSettings extends AppCompatActivity implements View.On
         tilController = findViewById(R.id.tip_ip);
         tilServer = findViewById(R.id.tip_server_ip);
         progressBar = findViewById(R.id.pb_indication);
+        progressBarForIp = findViewById(R.id.pb_indication_ip);
         ipHintPrefix = getResources().getString(R.string.ip_hint) + " ";
         setCurrentIp(tilController,FileUtil.getIp(this));
         setCurrentIp(tilServer,FileUtil.getServerIp(this));
@@ -43,6 +51,8 @@ public class ActivityCommonSettings extends AppCompatActivity implements View.On
         findViewById(R.id.bt_set_server_ip).setOnClickListener(this);
         btUpdateToken = findViewById(R.id.bt_update_token);
         btUpdateToken.setOnClickListener(this);
+        btUpdateIp = findViewById(R.id.bt_update_ip);
+        btUpdateIp.setOnClickListener(this);
         if (FileUtil.isHaveToUpdateToken(this)) {
             Animation animation = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
             btUpdateToken.startAnimation(animation);
@@ -128,33 +138,69 @@ public class ActivityCommonSettings extends AppCompatActivity implements View.On
                     Toast.makeText(this, R.string.ip_server_error, Toast.LENGTH_LONG).show();
                     return;
                 }
-                changeUpdateButtonVisibility(false);
+                changeUpdateButtonVisibility(btUpdateToken, progressBar, false);
                 TokenHelper tokenHelper = new TokenHelper(this);
                 tokenHelper.askToken(getApplicationContext());
+                break;
+            case R.id.bt_update_ip:
+                if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX)) {
+                    Toast.makeText(this, R.string.ip_server_error, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                String cntrlIp = FileUtil.getIp(this);
+                if (cntrlIp.equals(NetConfig.IP_PREFIX)) {
+                    Toast.makeText(this, R.string.ip_incorrect, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                ControllerEntity controllerEntity = new ControllerEntity();
+                controllerEntity.setControllerIp(cntrlIp);
+                changeUpdateButtonVisibility(btUpdateIp, progressBarForIp, false);
+                AbstractRequest abstractRequest = new SetControllerIpRequest(this, new UpdateIpObserver(), controllerEntity);
+                abstractRequest.call();
                 break;
         }
     }
 
-    private void changeUpdateButtonVisibility(boolean isButtonVisible) {
+    private void changeUpdateButtonVisibility(View button, View progress, boolean isButtonVisible) {
         if (isButtonVisible) {
-            btUpdateToken.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
+            button.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
         }
         else {
-            btUpdateToken.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
+            button.setVisibility(View.GONE);
+            progress.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void success(Object o) {
-        changeUpdateButtonVisibility(true);
+        changeUpdateButtonVisibility(btUpdateToken, progressBar, true);
         Toast.makeText(this, R.string.finished_with_ok, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void error(Object o) {
-        changeUpdateButtonVisibility(true);
+        changeUpdateButtonVisibility(btUpdateToken, progressBar,true);
         Toast.makeText(this, R.string.error_msg, Toast.LENGTH_LONG).show();
+    }
+
+    class UpdateIpObserver implements Observer<Object> {
+
+        @Override
+        public void onChanged(Object o) {
+            if (o instanceof Throwable) {
+                changeUpdateButtonVisibility(btUpdateIp, progressBarForIp, true);
+                Toast.makeText(ActivityCommonSettings.this, R.string.error_msg, Toast.LENGTH_LONG).show();
+            }
+            else {
+                Response<ResponseBody> responseBodyResponse = (Response<ResponseBody>) o;
+                if (responseBodyResponse.isSuccessful())
+                    Toast.makeText(ActivityCommonSettings.this,getResources().getString(R.string.done), Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(ActivityCommonSettings.this, R.string.error_msg, Toast.LENGTH_LONG).show();
+
+                changeUpdateButtonVisibility(btUpdateIp, progressBarForIp, true);
+            }
+        }
     }
 }
