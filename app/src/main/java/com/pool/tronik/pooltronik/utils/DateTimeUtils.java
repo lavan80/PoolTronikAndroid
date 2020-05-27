@@ -107,4 +107,10 @@ public class DateTimeUtils {
         //DateTime customDateTimeFromString = new DateTime("2018-05-05T10:11:12.123");
         return localDateTime;
     }
+
+    public static String getMinuteOfHour(int minute) {
+        if (minute < 10)
+            return "0"+minute;
+        return ""+minute;
+    }
 }

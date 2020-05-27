@@ -49,7 +49,8 @@ public class ScheduledTaskAdapter extends RecyclerView.Adapter<ScheduledTaskAdap
         holder.tvRelayName.setText(relayName);
         LocalDateTime localDateTime = DateTimeUtils.createLocalDateTime(ptScheduleDate.getStartDate());
         String date = DateTimeUtils.getDayOfWeek(localDateTime.getDayOfWeek(),context)
-                + " - "+localDateTime.getHourOfDay()+":"+localDateTime.getMinuteOfHour();
+                + " - "+localDateTime.getHourOfDay()+":"+DateTimeUtils.getMinuteOfHour(localDateTime.getMinuteOfHour());
+
         holder.tvTime.setText(date);
         String txt;
         if (ptScheduleDate.getDuration() == StaticVarFile.DurationStatus.ALWAYS.ordinal()) {
