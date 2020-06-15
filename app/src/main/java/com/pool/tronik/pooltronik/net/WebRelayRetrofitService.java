@@ -33,4 +33,7 @@ public interface WebRelayRetrofitService {
 
     @POST("settings/update")
     Call<ResponseBody> setControllerIp(@Body ControllerEntity controllerEntity);
+
+    @GET("status.xml")
+    Call<String> getRelayState();
 }

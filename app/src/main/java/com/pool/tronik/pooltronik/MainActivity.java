@@ -25,13 +25,17 @@ import com.google.android.material.internal.NavigationMenuView;
 import com.google.android.material.navigation.NavigationView;
 import com.pool.tronik.pooltronik.adapters.RelayAdapter;
 import com.pool.tronik.pooltronik.net.ControllerNetRequest;
+import com.pool.tronik.pooltronik.net.GetStateRelayRequest;
 import com.pool.tronik.pooltronik.utils.FileUtil;
 import com.pool.tronik.pooltronik.utils.RelayConfig;
 import com.pool.tronik.pooltronik.utils.RelayStatus;
+import com.pool.tronik.pooltronik.utils.RelayUtil;
 import com.pool.tronik.pooltronik.utils.StringUtils;
+import com.pool.tronik.pooltronik.utils.XmlUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Response;
 
@@ -62,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
         //******
         getToken();
+        //GetStateRelayRequest getStateRelayRequest = new GetStateRelayRequest(this, new RelayStatusCallback());
+        //getStateRelayRequest.call();
     }
 
     @Override
@@ -73,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             attentionLayout.setVisibility(View.GONE);
+        GetStateRelayRequest getStateRelayRequest = new GetStateRelayRequest(this, new RelayStatusCallback());
+        getStateRelayRequest.call();
     }
 
     public void initToolbar() {
@@ -191,8 +199,6 @@ public class MainActivity extends AppCompatActivity {
                 onComplete();
                 Response<String> response = (Response<String>) o;
                 if(response.isSuccessful()) {
-                    Object body = response.body();
-                    String str = body.toString();
                     int status;
                     if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING && relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
                         status = RelayConfig.STATUS_ON;
@@ -224,40 +230,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void mockRequest(final RelayStatus relayStatus) {
-        Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            clickedList.remove(new Integer(relayStatus.getRelay()));
-                            int status;
-                            Log.d("DRDRDRDR","Thread status="+relayStatus.getStatus()+"; RequestedStatus="+relayStatus.getRequestedStatus());
-                            if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING &&
-                                    relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
-                                status = RelayConfig.STATUS_ON;
-                                FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);
+    class RelayStatusCallback implements Observer<Object> {
+
+        @Override
+        public void onChanged(Object o) {
+            if (!(o instanceof Throwable)) {
+                Response<String> response = (Response<String>) o;
+                if (response.isSuccessful()) {
+                    String s = response.body();
+                    Log.d("ASDDSA","s = "+s);
+                    Map<Integer,Integer> mapStatus = XmlUtil.parseXml(s);
+                    RelayAdapter relayAdapter = (RelayAdapter) recyclerView.getAdapter();
+                    List<RelayStatus> relayStatusList = relayAdapter.getStatusList();
+                    boolean isNeedUpdate = false;
+                    for (RelayStatus relayStatus : relayStatusList) {
+                        if (mapStatus.containsKey(relayStatus.getRelay()+1)) {
+                            int status = mapStatus.get(relayStatus.getRelay()+1);
+                            if (status != relayStatus.getStatus()) {
+                                relayStatus.setStatus(status);
+                                //RelayUtil.setCorrectState(relayStatus, relayStatus.getRelay());
+                                if (relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
+                                    FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);
+                                }
+                                else if (relayStatus.getRequestedStatus() == RelayConfig.STATUS_OFF) {
+                                    FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), false);
+                                }
+                                isNeedUpdate = true;
                             }
-                            else if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING &&
-                                    relayStatus.getRequestedStatus() == RelayConfig.STATUS_OFF) {
-                                status = RelayConfig.STATUS_OFF;
-                                FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), false);
-                            }
-                            else
-                                status = relayStatus.getStatus();
-                            ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(), status);
                         }
-                    });
+                    }
+                    if (isNeedUpdate)
+                        relayAdapter.notifyDataSetChanged();
+                    //FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);
+                    Log.d("ASDDSA","mapStatus = "+mapStatus);
                 }
-            });
-            thread.start();
+            }
+        }
     }
+
     public void getToken() {
         //MyFirebaseMessagingService.showSystemNotification(this,"alarm msg");
         if (TokenHelper.isNeedRefresh(getApplicationContext())) {
@@ -265,4 +275,39 @@ public class MainActivity extends AppCompatActivity {
             tokenHelper.askToken(getApplicationContext());
         }
     }
+    public void mockRequest(final RelayStatus relayStatus) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        clickedList.remove(new Integer(relayStatus.getRelay()));
+                        int status;
+                        Log.d("DRDRDRDR","Thread status="+relayStatus.getStatus()+"; RequestedStatus="+relayStatus.getRequestedStatus());
+                        if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING &&
+                                relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
+                            status = RelayConfig.STATUS_ON;
+                            FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);
+                        }
+                        else if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING &&
+                                relayStatus.getRequestedStatus() == RelayConfig.STATUS_OFF) {
+                            status = RelayConfig.STATUS_OFF;
+                            FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), false);
+                        }
+                        else
+                            status = relayStatus.getStatus();
+                        ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(), status);
+                    }
+                });
+            }
+        });
+        thread.start();
+    }
+
 }

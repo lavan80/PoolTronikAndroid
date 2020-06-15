@@ -63,7 +63,6 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
     public void onBindViewHolder(@NonNull RelayViewHolder relayViewHolder, int i) {
         RelayStatus relayStatus = statusList.get(i);
         if (relayStatus.getStatus() == RelayConfig.STATUS_ON) {
-            //relayStatus.setStatus(RelayConfig.STATUS_ON);
             relayStatus.setRequestedStatus(RelayConfig.STATUS_OFF);
             relayStatus.setCommand(RelayConfig.RELAY_LIST_ON.get(i));
             relayStatus.setAvailableCommand(RelayConfig.RELAY_LIST_OFF.get(i));
@@ -103,7 +102,15 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
         notifyItemChanged(position);
     }
 
-    /*private void changeSwitchColor(ImageButton imageButton, int status) {
+    public List<RelayStatus> getStatusList() {
+        return statusList;
+    }
+
+    public void setStatusList(List<RelayStatus> statusList) {
+        this.statusList = statusList;
+    }
+
+   /*private void changeSwitchColor(ImageButton imageButton, int status) {
         GradientDrawable backgroundGradient = (GradientDrawable)imageButton.getBackground();
         if (status == RelayConfig.STATUS_OFF)
              backgroundGradient.setColor(Color.parseColor(ColorUtils.COLOR_OFF));
