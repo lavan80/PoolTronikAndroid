@@ -36,7 +36,6 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
         String defName = context.getResources().getString(R.string.def_relay_name);
         for (int i = 0; i < RelayConfig.RELAYS_SIZE; i++) {
             RelayStatus relayStatus = new RelayStatus();
-            //relayStatus.setRelay(i+1);
             relayStatus.setRelay(i);
             if (FileUtil.getRelayStatus(context,RelayConfig.RELAY_LIST_ON.get(i))) {
                 relayStatus.setStatus(RelayConfig.STATUS_ON);
@@ -46,7 +45,7 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
             }
             String name = FileUtil.getRelayName(context, RelayConfig.RELAY_LIST_ON.get(i));
             if (name.equalsIgnoreCase(defName))
-                name += i;//name += (i+1);
+                name += i;
             relayStatus.setName(name);
             statusList.add(relayStatus);
         }
@@ -75,7 +74,6 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
             relayViewHolder.ivSwitch.setOnClickListener(null);
         }
         else {
-            //relayStatus.setStatus(RelayConfig.STATUS_OFF);
             relayStatus.setRequestedStatus(RelayConfig.STATUS_ON);
             relayStatus.setCommand(RelayConfig.RELAY_LIST_ON.get(i));
             relayStatus.setAvailableCommand(RelayConfig.RELAY_LIST_ON.get(i));
@@ -83,11 +81,8 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
             relayViewHolder.progressBar.setVisibility(View.GONE);
         }
 
-        //changeSwitchColor(relayViewHolder.ivSwitch, relayStatus.getStatus());
         ColorUtils.setColor(relayViewHolder.ivSwitch, relayStatus.getStatus());
 
-        //relayViewHolder.textView.setText("Relay"+(i+1)+"; Status="+relayStatus.getStatus());
-        //String relayName = relayViewHolder.textView.getResources().getString(R.string.def_relay_name)+(i+1);
         relayViewHolder.textView.setText(relayStatus.getName());
         relayViewHolder.ivSwitch.setTag(relayStatus);
         relayViewHolder.ivSettings.setTag(relayStatus);
@@ -109,14 +104,6 @@ public class RelayAdapter extends RecyclerView.Adapter<RelayAdapter.RelayViewHol
     public void setStatusList(List<RelayStatus> statusList) {
         this.statusList = statusList;
     }
-
-   /*private void changeSwitchColor(ImageButton imageButton, int status) {
-        GradientDrawable backgroundGradient = (GradientDrawable)imageButton.getBackground();
-        if (status == RelayConfig.STATUS_OFF)
-             backgroundGradient.setColor(Color.parseColor(ColorUtils.COLOR_OFF));
-        else if (status == RelayConfig.STATUS_ON)
-            backgroundGradient.setColor(Color.parseColor(ColorUtils.COLOR_ON));
-    }*/
 
     @Override
     public int getItemCount() {

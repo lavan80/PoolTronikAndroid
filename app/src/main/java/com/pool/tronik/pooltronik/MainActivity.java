@@ -29,7 +29,6 @@ import com.pool.tronik.pooltronik.net.GetStateRelayRequest;
 import com.pool.tronik.pooltronik.utils.FileUtil;
 import com.pool.tronik.pooltronik.utils.RelayConfig;
 import com.pool.tronik.pooltronik.utils.RelayStatus;
-import com.pool.tronik.pooltronik.utils.RelayUtil;
 import com.pool.tronik.pooltronik.utils.StringUtils;
 import com.pool.tronik.pooltronik.utils.XmlUtil;
 
@@ -41,7 +40,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final int REQUEST_CODE = 5432;
+    private final int REQUEST_SETTINGS = 5432;
     private final int REQUEST_CHANGE = 5433;
 
     private RecyclerView recyclerView;
@@ -63,11 +62,8 @@ public class MainActivity extends AppCompatActivity {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setAdapter(new RelayAdapter(this, new MClickListener()));
-
         //******
         getToken();
-        //GetStateRelayRequest getStateRelayRequest = new GetStateRelayRequest(this, new RelayStatusCallback());
-        //getStateRelayRequest.call();
     }
 
     @Override
@@ -102,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         switch (menuItem.getItemId()){
                             case R.id.nav_settings:
-                                startActivityForResult(new Intent(MainActivity.this,ActivityCommonSettings.class),REQUEST_CODE);
+                                startActivityForResult(new Intent(MainActivity.this,ActivityCommonSettings.class), REQUEST_SETTINGS);
                                 break;
                             case R.id.nav_about_us:
                                 String url = "http://www.jenyazla.wixsite.com/pool-tronic";
@@ -121,16 +117,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
-                case REQUEST_CODE:
-                    ((RelayAdapter)recyclerView.getAdapter()).initFromLocalFile(this);
-                    ((RelayAdapter)recyclerView.getAdapter()).notifyDataSetChanged();
-                    break;
+                case REQUEST_SETTINGS:
                 case REQUEST_CHANGE:
                     ((RelayAdapter)recyclerView.getAdapter()).initFromLocalFile(this);
                     ((RelayAdapter)recyclerView.getAdapter()).notifyDataSetChanged();
                     break;
             }
-
         }
     }
 
@@ -238,31 +230,28 @@ public class MainActivity extends AppCompatActivity {
                 Response<String> response = (Response<String>) o;
                 if (response.isSuccessful()) {
                     String s = response.body();
-                    Log.d("ASDDSA","s = "+s);
                     Map<Integer,Integer> mapStatus = XmlUtil.parseXml(s);
                     RelayAdapter relayAdapter = (RelayAdapter) recyclerView.getAdapter();
                     List<RelayStatus> relayStatusList = relayAdapter.getStatusList();
                     boolean isNeedUpdate = false;
-                    for (RelayStatus relayStatus : relayStatusList) {
-                        if (mapStatus.containsKey(relayStatus.getRelay()+1)) {
-                            int status = mapStatus.get(relayStatus.getRelay()+1);
-                            if (status != relayStatus.getStatus()) {
-                                relayStatus.setStatus(status);
-                                //RelayUtil.setCorrectState(relayStatus, relayStatus.getRelay());
-                                if (relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
-                                    FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);
+                    try {
+                        for (RelayStatus relayStatus : relayStatusList) {
+                            if (mapStatus.containsKey(relayStatus.getRelay() + 1)) {
+                                int status = mapStatus.get(relayStatus.getRelay() + 1);
+                                if (status != relayStatus.getStatus()) {
+                                    relayStatus.setStatus(status);
+                                    if (relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
+                                        FileUtil.setRelayStatus(getApplicationContext(), relayStatus.getCommand(), true);
+                                    } else if (relayStatus.getRequestedStatus() == RelayConfig.STATUS_OFF) {
+                                        FileUtil.setRelayStatus(getApplicationContext(), relayStatus.getCommand(), false);
+                                    }
+                                    isNeedUpdate = true;
                                 }
-                                else if (relayStatus.getRequestedStatus() == RelayConfig.STATUS_OFF) {
-                                    FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), false);
-                                }
-                                isNeedUpdate = true;
                             }
                         }
-                    }
-                    if (isNeedUpdate)
-                        relayAdapter.notifyDataSetChanged();
-                    //FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), true);
-                    Log.d("ASDDSA","mapStatus = "+mapStatus);
+                        if (isNeedUpdate)
+                            relayAdapter.notifyDataSetChanged();
+                    } catch (Exception e){}
                 }
             }
         }
