@@ -15,8 +15,10 @@ public class TaskNetRequest extends AbstractRequest{
     }
 
     public void call() {
-        if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX))
+        if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX)) {
+            emitThrowable("");
             return;
+        }
 
         WebRelayRetrofitService webRelayRetrofitService = restClient.getRetrofit(NetConfig.BASE_SERVER_URL)
                 .create(WebRelayRetrofitService.class);

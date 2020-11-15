@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivityForResult(new Intent(MainActivity.this,ActivityCommonSettings.class), REQUEST_SETTINGS);
                                 break;
                             case R.id.nav_about_us:
-                                String url = "http://www.jenyazla.wixsite.com/pool-tronic";
+                                String url = "http://www.pooltronic.co.il";
                                 Intent i = new Intent(Intent.ACTION_VIEW);
                                 i.setData(Uri.parse(url));
                                 startActivity(i);

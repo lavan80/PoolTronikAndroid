@@ -242,7 +242,13 @@ public class ActivityScheduling extends AppCompatActivity implements View.OnClic
         public void onChanged(Object o) {
             if (o instanceof Throwable) {
                 changeTitleState(false);
-                showSnackBar(getResources().getString(R.string.error2));
+                Throwable throwable = (Throwable) o;
+                if (throwable.getMessage() == null || throwable.getMessage().isEmpty()){
+                    showSnackBar(getResources().getString(R.string.error3));
+                }
+                else {
+                    showSnackBar(getResources().getString(R.string.error2));
+                }
             }
             else {
                 changeTitleState(false);

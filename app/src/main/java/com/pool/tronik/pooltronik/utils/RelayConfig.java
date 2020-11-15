@@ -11,7 +11,7 @@ public class RelayConfig {
             RelayOn.RELAY5, RelayOn.RELAY6, RelayOn.RELAY7, RelayOn.RELAY8);
     public static List<String> RELAY_LIST_OFF = Arrays.asList(RelayOff.RELAY1, RelayOff.RELAY2, RelayOff.RELAY3, RelayOff.RELAY4,
             RelayOff.RELAY5, RelayOff.RELAY6, RelayOff.RELAY7, RelayOff.RELAY8);
-    public static final int RELAYS_SIZE = 8;
+    public static final int RELAYS_SIZE = 4;
     public static final int STATUS_ON = 1;
     public static final int STATUS_OFF = 0;
     public static final int STATUS_PENDING = 2;

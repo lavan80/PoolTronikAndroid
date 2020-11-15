@@ -17,6 +17,7 @@ public class SetControllerIpRequest extends AbstractRequest {
     @Override
     public void call() {
         if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX)) {
+            emitThrowable("");
             return;
         }
         WebRelayRetrofitService webRelayRetrofitService = restClient.getRetrofit(NetConfig.BASE_SERVER_URL)
