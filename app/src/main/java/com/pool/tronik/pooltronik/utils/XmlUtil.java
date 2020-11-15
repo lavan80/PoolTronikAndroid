@@ -27,7 +27,8 @@ public class XmlUtil {
                             key = key.substring(key.length()-1);
                             //i think 0 is just lamp indicator on the relays box
                             if (!key.equalsIgnoreCase("0")) {
-                                map.put(Integer.parseInt(key), Integer.parseInt(xpp.getText()));
+                                //in the rest of  the app relays count from zero
+                                map.put((Integer.parseInt(key) - 1), Integer.parseInt(xpp.getText()));
                             }
                         } catch (Exception e){}
 

@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.internal.NavigationMenuView;
 import com.google.android.material.navigation.NavigationView;
 import com.pool.tronik.pooltronik.adapters.RelayAdapter;
+import com.pool.tronik.pooltronik.net.AbstractRequest;
 import com.pool.tronik.pooltronik.net.ControllerNetRequest;
 import com.pool.tronik.pooltronik.net.GetStateRelayRequest;
 import com.pool.tronik.pooltronik.utils.FileUtil;
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private List<Integer> clickedList;
     private DrawerLayout drawerLayout;
     private ViewGroup attentionLayout;
+    private boolean isStateUpdated = false;
+    private List<AbstractRequest> requestList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
         initNavigationView();
         clickedList = new ArrayList<>();
+        requestList = new ArrayList<>();
         attentionLayout = findViewById(R.id.rl_alert_container);
         drawerLayout = findViewById(R.id.drawer_layout);
         recyclerView = findViewById(R.id.rv_relay_list);
@@ -75,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             attentionLayout.setVisibility(View.GONE);
+
+        isStateUpdated = false;
         GetStateRelayRequest getStateRelayRequest = new GetStateRelayRequest(this, new RelayStatusCallback());
         getStateRelayRequest.call();
     }
@@ -150,8 +156,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                     ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(),RelayConfig.STATUS_PENDING);
                     clickedList.add(relayStatus.getRelay());
-                    ControllerNetRequest netRequest = new ControllerNetRequest(MainActivity.this, new MCallback(relayStatus),relayStatus);
-                    netRequest.call();
+                    ControllerNetRequest netRequest = new ControllerNetRequest(MainActivity.this, new RelayOnClickCallback(relayStatus),relayStatus);
+                    if (!isStateUpdated) {
+                        requestList.add(netRequest);
+                    }
+                    else
+                        netRequest.call();
                     //mockRequest(relayStatus);
                     break;
                 case R.id.iv_settings:
@@ -175,10 +185,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    class MCallback implements Observer<Object> {
+    class RelayOnClickCallback implements Observer<Object> {
         RelayStatus relayStatus;
 
-        MCallback(RelayStatus relayStatus){
+        RelayOnClickCallback(RelayStatus relayStatus){
             this.relayStatus = relayStatus;
         }
         @Override
@@ -200,8 +210,10 @@ public class MainActivity extends AppCompatActivity {
                         status = RelayConfig.STATUS_OFF;
                         FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), false);
                     }
-                    else
-                        status = relayStatus.getStatus();
+                    else {
+                        status = relayStatus.getRequestedStatus();
+                        FileUtil.setRelayStatus(getApplicationContext(),relayStatus.getCommand(), status == (RelayConfig.STATUS_ON));
+                    }
                     ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(), status);
                 }
                 else {
@@ -226,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onChanged(Object o) {
+            isStateUpdated = true;// even if we are get an error user can try to on/off a controller
             if (!(o instanceof Throwable)) {
                 Response<String> response = (Response<String>) o;
                 if (response.isSuccessful()) {
@@ -236,8 +249,8 @@ public class MainActivity extends AppCompatActivity {
                     boolean isNeedUpdate = false;
                     try {
                         for (RelayStatus relayStatus : relayStatusList) {
-                            if (mapStatus.containsKey(relayStatus.getRelay() + 1)) {
-                                int status = mapStatus.get(relayStatus.getRelay() + 1);
+                            if (mapStatus.containsKey(relayStatus.getRelay())) {
+                                int status = mapStatus.get(relayStatus.getRelay());
                                 if (status != relayStatus.getStatus()) {
                                     relayStatus.setStatus(status);
                                     if (relayStatus.getRequestedStatus() == RelayConfig.STATUS_ON) {
@@ -253,6 +266,12 @@ public class MainActivity extends AppCompatActivity {
                             relayAdapter.notifyDataSetChanged();
                     } catch (Exception e){}
                 }
+            }
+            if (!requestList.isEmpty()) {
+                for (AbstractRequest request : requestList) {
+                    request.call();
+                }
+                requestList.clear();
             }
         }
     }
