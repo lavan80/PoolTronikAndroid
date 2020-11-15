@@ -224,7 +224,6 @@ public class RelaySettingActivity extends AppCompatActivity {
         @Override
         public void onChanged(Object o) {
             if (o instanceof Throwable) {
-                setEmptyText(false);
                 showSnackBar(getResources().getString(R.string.error2));
             }
             else {
@@ -241,7 +240,13 @@ public class RelaySettingActivity extends AppCompatActivity {
         public void onChanged(Object o) {
             if (o instanceof Throwable) {
                 setEmptyText(false);
-                showSnackBar(getResources().getString(R.string.error2));
+                Throwable throwable = (Throwable) o;
+                if (throwable.getMessage() == null || throwable.getMessage().isEmpty()){
+                    showSnackBar(getResources().getString(R.string.error3));
+                }
+                else {
+                    showSnackBar(getResources().getString(R.string.error2));
+                }
             }
             else {
                 Response<List<PTScheduleDate>> response = (Response<List<PTScheduleDate>>) o;

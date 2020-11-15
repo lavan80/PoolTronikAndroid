@@ -53,6 +53,7 @@
     <string name="since">Since</string>
     <string name="update_controller_ip">Update controller Ip address (from the local network only)</string>
     <string name="bt_update_ip">Update Ip</string>
+    <string name="error3">You have to set up Controller/Server Ip</string>
 
 
 </resources><!--<string name="ip_reset_description">This action will reset all indication button in your app to settings by default (set to off).\nThis action

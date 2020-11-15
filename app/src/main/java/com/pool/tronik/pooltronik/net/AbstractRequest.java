@@ -33,6 +33,17 @@ public abstract class AbstractRequest {
         mutableLiveData.setValue(o);
     }
 
+    protected void emitThrowable(String msg) {
+        Throwable throwable;
+        if (msg == null || msg.isEmpty()) {
+            throwable = new Throwable();
+        }
+        else {
+            throwable = new Throwable(msg);
+        }
+        emit(throwable);
+    }
+
     protected class NetCallback<T> implements Callback<T> {
 
         @Override

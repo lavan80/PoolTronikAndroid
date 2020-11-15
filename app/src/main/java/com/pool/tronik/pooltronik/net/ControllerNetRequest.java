@@ -17,8 +17,10 @@ public class ControllerNetRequest extends AbstractRequest{
     }
 
     public void call() {
-        if (NetConfig.BASE_CONTROLLER_URL.equals(NetConfig.IP_PREFIX))
+        if (NetConfig.BASE_CONTROLLER_URL.equals(NetConfig.IP_PREFIX)) {
+            emitThrowable("");
             return;
+        }
         WebRelayRetrofitService webRelayRetrofitService = restClient.getRetrofit(NetConfig.BASE_CONTROLLER_URL
                 , ScalarsConverterFactory.create())
                 .create(WebRelayRetrofitService.class);
