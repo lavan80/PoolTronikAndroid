@@ -3,12 +3,12 @@ package com.pool.tronik.pooltronik;
 import android.content.Context;
 import android.provider.Settings;
 
-import androidx.annotation.NonNull;
+/*import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.iid.InstanceIdResult;*/
 import com.pool.tronik.pooltronik.dto.PushEntity;
 import com.pool.tronik.pooltronik.net.NetConfig;
 import com.pool.tronik.pooltronik.net.PushNotificationRequest;
@@ -34,7 +34,7 @@ public class TokenHelper {
     }
 
     public void askToken(final Context context) {
-        if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX))
+        /*if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX))
             return;
         if (FileUtil.isHasNewToken(context)) {
             sendToken(context, FileUtil.getFcmToken(context));
@@ -52,7 +52,7 @@ public class TokenHelper {
                             sendToken(context, token);
                         }
                     });
-        }
+        }*/
     }
 
     public void sendToken(final Context context, final String token){

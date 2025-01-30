@@ -15,7 +15,7 @@ public class PoolTronickApp extends Application {
         NetConfig.BASE_CONTROLLER_URL = FileUtil.getIp(this);
         NetConfig.BASE_SERVER_URL = FileUtil.getServerIp(this);
 
-        if(BuildConfig.DEBUG) {
+        /*if(BuildConfig.DEBUG) {
             // Create an InitializerBuilder
             Stetho.InitializerBuilder initializerBuilder =
                     Stetho.newInitializerBuilder(this);
@@ -36,7 +36,7 @@ public class PoolTronickApp extends Application {
             // Initiali
             // ze Stetho with the Initializer
             Stetho.initialize(initializer);
-        }
+        }*/
 
     }
 }

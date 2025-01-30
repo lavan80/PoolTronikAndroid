@@ -100,15 +100,14 @@ public class RelaySettingActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case R.id.menu_apply:
-                proceed();
-                finish();
-                return true;
-            case android.R.id.home:
-                finish();
-                return true;
-
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_apply) {
+            proceed();
+            finish();
+            return true;
+        } else if (itemId == android.R.id.home) {
+            finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -153,28 +152,25 @@ public class RelaySettingActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.bt_on_off_editable:
-                    if (relayStatus.getStatus() == RelayConfig.STATUS_OFF)
-                        relayStatus.setStatus(RelayConfig.STATUS_ON);
-                    else
-                        relayStatus.setStatus(RelayConfig.STATUS_OFF);
-                    changeStatusColor();
-                    break;
-                case R.id.iv_schedule:
-                    startActivity(IntentHelper.getIntent(RelaySettingActivity.this, ActivityScheduling.class, relayStatus));
-                    break;
-                case R.id.bt_item_delete:
-                    PTScheduleDate ptScheduleDate = (PTScheduleDate) view.getTag();
-                    if (ptScheduleDate != null) {
-                        scheduledTaskAdapter.addToInProgress(ptScheduleDate.getId());
+            int id = view.getId();
+            if (id == R.id.bt_on_off_editable) {
+                if (relayStatus.getStatus() == RelayConfig.STATUS_OFF)
+                    relayStatus.setStatus(RelayConfig.STATUS_ON);
+                else
+                    relayStatus.setStatus(RelayConfig.STATUS_OFF);
+                changeStatusColor();
+            } else if (id == R.id.iv_schedule) {
+                startActivity(IntentHelper.getIntent(RelaySettingActivity.this, ActivityScheduling.class, relayStatus));
+            } else if (id == R.id.bt_item_delete) {
+                PTScheduleDate ptScheduleDate = (PTScheduleDate) view.getTag();
+                if (ptScheduleDate != null) {
+                    scheduledTaskAdapter.addToInProgress(ptScheduleDate.getId());
 
-                        DeleteTaskRequest deleteTaskRequest = new DeleteTaskRequest(RelaySettingActivity.this,
-                                new DeleteObserver(ptScheduleDate.getId()),
-                             ptScheduleDate.getId());
-                        deleteTaskRequest.call();
-                    }
-                    break;
+                    DeleteTaskRequest deleteTaskRequest = new DeleteTaskRequest(RelaySettingActivity.this,
+                            new DeleteObserver(ptScheduleDate.getId()),
+                            ptScheduleDate.getId());
+                    deleteTaskRequest.call();
+                }
             }
         }
     }

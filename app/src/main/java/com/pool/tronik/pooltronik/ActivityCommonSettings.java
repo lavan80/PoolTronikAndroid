@@ -97,67 +97,59 @@ public class ActivityCommonSettings extends AppCompatActivity implements View.On
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.bt_reset_status:
-                //TransitionDrawable transition = (TransitionDrawable)view.getBackground();
-                //transition.startTransition(500);
-                ((Button)view).setText(R.string.done);
-                FileUtil.resetParams(this);
-                setResult(RESULT_OK);
-                break;
-            case R.id.bt_set_ip:
-                String ip = tilController.getEditText().getText().toString();
-                if(Patterns.IP_ADDRESS.matcher(ip).matches()) {
-                    tilController.setHint(ipHintPrefix + ip);
-                    tilController.getEditText().setText("");
-                }
-                else {
-                    Toast.makeText(this, R.string.ip_incorrect, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                ip = NetConfig.IP_PREFIX + ip;
-                FileUtil.setIp(this,ip);
-                NetConfig.BASE_CONTROLLER_URL = ip;
-                break;
-            case R.id.bt_set_server_ip:
-                String serverIp = tilServer.getEditText().getText().toString();
-                if(Patterns.IP_ADDRESS.matcher(serverIp).matches()) {
-                    tilServer.setHint(ipHintPrefix + serverIp);
-                    tilServer.getEditText().setText("");
-                }
-                else {
-                    Toast.makeText(this, R.string.ip_incorrect, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                serverIp = NetConfig.IP_PREFIX + serverIp + NetConfig.BASE_PORT;
-                FileUtil.setServerIp(this,serverIp);
-                NetConfig.BASE_SERVER_URL = serverIp;
-                break;
-            case R.id.bt_update_token:
-                if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX)) {
-                    Toast.makeText(this, R.string.ip_server_error, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                changeUpdateButtonVisibility(btUpdateToken, progressBar, false);
-                TokenHelper tokenHelper = new TokenHelper(this);
-                tokenHelper.askToken(getApplicationContext());
-                break;
-            case R.id.bt_update_ip:
-                if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX)) {
-                    Toast.makeText(this, R.string.ip_server_error, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                String cntrlIp = FileUtil.getIp(this);
-                if (cntrlIp.equals(NetConfig.IP_PREFIX)) {
-                    Toast.makeText(this, R.string.ip_incorrect, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                ControllerEntity controllerEntity = new ControllerEntity();
-                controllerEntity.setControllerIp(cntrlIp);
-                changeUpdateButtonVisibility(btUpdateIp, progressBarForIp, false);
-                AbstractRequest abstractRequest = new SetControllerIpRequest(this, new UpdateIpObserver(), controllerEntity);
-                abstractRequest.call();
-                break;
+        int id = view.getId();
+        if (id == R.id.bt_reset_status) {//TransitionDrawable transition = (TransitionDrawable)view.getBackground();
+            //transition.startTransition(500);
+            ((Button) view).setText(R.string.done);
+            FileUtil.resetParams(this);
+            setResult(RESULT_OK);
+        } else if (id == R.id.bt_set_ip) {
+            String ip = tilController.getEditText().getText().toString();
+            if (Patterns.IP_ADDRESS.matcher(ip).matches()) {
+                tilController.setHint(ipHintPrefix + ip);
+                tilController.getEditText().setText("");
+            } else {
+                Toast.makeText(this, R.string.ip_incorrect, Toast.LENGTH_LONG).show();
+                return;
+            }
+            ip = NetConfig.IP_PREFIX + ip;
+            FileUtil.setIp(this, ip);
+            NetConfig.BASE_CONTROLLER_URL = ip;
+        } else if (id == R.id.bt_set_server_ip) {
+            String serverIp = tilServer.getEditText().getText().toString();
+            if (Patterns.IP_ADDRESS.matcher(serverIp).matches()) {
+                tilServer.setHint(ipHintPrefix + serverIp);
+                tilServer.getEditText().setText("");
+            } else {
+                Toast.makeText(this, R.string.ip_incorrect, Toast.LENGTH_LONG).show();
+                return;
+            }
+            serverIp = NetConfig.IP_PREFIX + serverIp + NetConfig.BASE_PORT;
+            FileUtil.setServerIp(this, serverIp);
+            NetConfig.BASE_SERVER_URL = serverIp;
+        } else if (id == R.id.bt_update_token) {
+            if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX)) {
+                Toast.makeText(this, R.string.ip_server_error, Toast.LENGTH_LONG).show();
+                return;
+            }
+            changeUpdateButtonVisibility(btUpdateToken, progressBar, false);
+            TokenHelper tokenHelper = new TokenHelper(this);
+            tokenHelper.askToken(getApplicationContext());
+        } else if (id == R.id.bt_update_ip) {
+            if (NetConfig.BASE_SERVER_URL.equals(NetConfig.IP_PREFIX)) {
+                Toast.makeText(this, R.string.ip_server_error, Toast.LENGTH_LONG).show();
+                return;
+            }
+            String cntrlIp = FileUtil.getIp(this);
+            if (cntrlIp.equals(NetConfig.IP_PREFIX)) {
+                Toast.makeText(this, R.string.ip_incorrect, Toast.LENGTH_LONG).show();
+                return;
+            }
+            ControllerEntity controllerEntity = new ControllerEntity();
+            controllerEntity.setControllerIp(cntrlIp);
+            changeUpdateButtonVisibility(btUpdateIp, progressBarForIp, false);
+            AbstractRequest abstractRequest = new SetControllerIpRequest(this, new UpdateIpObserver(), controllerEntity);
+            abstractRequest.call();
         }
     }
 

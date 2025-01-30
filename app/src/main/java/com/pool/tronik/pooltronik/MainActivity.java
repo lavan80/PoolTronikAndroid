@@ -1,5 +1,6 @@
 package com.pool.tronik.pooltronik;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -96,22 +97,20 @@ public class MainActivity extends AppCompatActivity {
 
     public void initNavigationView() {
         NavigationView navigationView = findViewById(R.id.nav_view);
-        NavigationMenuView navMenuView = (NavigationMenuView) navigationView.getChildAt(0);
+        @SuppressLint("RestrictedApi") NavigationMenuView navMenuView = (NavigationMenuView) navigationView.getChildAt(0);
         navMenuView.addItemDecoration(new DividerItemDecoration(MainActivity.this,DividerItemDecoration.VERTICAL));
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        switch (menuItem.getItemId()){
-                            case R.id.nav_settings:
-                                startActivityForResult(new Intent(MainActivity.this,ActivityCommonSettings.class), REQUEST_SETTINGS);
-                                break;
-                            case R.id.nav_about_us:
-                                String url = "http://www.pooltronic.co.il";
-                                Intent i = new Intent(Intent.ACTION_VIEW);
-                                i.setData(Uri.parse(url));
-                                startActivity(i);
-                                break;
+                        int itemId = menuItem.getItemId();
+                        if (itemId == R.id.nav_settings) {
+                            startActivityForResult(new Intent(MainActivity.this, ActivityCommonSettings.class), REQUEST_SETTINGS);
+                        } else if (itemId == R.id.nav_about_us) {
+                            String url = "http://www.pooltronic.co.il";
+                            Intent i = new Intent(Intent.ACTION_VIEW);
+                            i.setData(Uri.parse(url));
+                            startActivity(i);
                         }
                         drawerLayout.closeDrawers();
                         return true;
@@ -121,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_SETTINGS:
@@ -148,38 +148,32 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             final RelayStatus relayStatus = (RelayStatus) view.getTag();
-            switch (view.getId()) {
-                case R.id.bt_on_off:
-                    //prevent double click
-                    if (clickedList.contains(relayStatus.getRelay())) {
-                        return;
-                    }
-                    ((RelayAdapter)recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(),RelayConfig.STATUS_PENDING);
-                    clickedList.add(relayStatus.getRelay());
-                    ControllerNetRequest netRequest = new ControllerNetRequest(MainActivity.this, new RelayOnClickCallback(relayStatus),relayStatus);
-                    if (!isStateUpdated) {
-                        requestList.add(netRequest);
-                    }
-                    else
-                        netRequest.call();
-                    //mockRequest(relayStatus);
-                    break;
-                case R.id.iv_settings:
-                    if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING)
-                        return;
-                    Intent intent = new Intent(MainActivity.this,RelaySettingActivity.class);
-                    intent.putExtra(StringUtils.EXTRA_DATA, relayStatus);
-                    startActivityForResult(intent,REQUEST_CHANGE);
-                    break;
-                case R.id.rl_alert_container:
-                    Intent aIntent = new Intent(MainActivity.this,ActivityCommonSettings.class);
-                    startActivity(aIntent);
-                    break;
-                case R.id.iv_schedule:
-                    Intent sIntent = new Intent(MainActivity.this,ActivityScheduling.class);
-                    sIntent.putExtra(StringUtils.EXTRA_DATA, relayStatus);
-                    startActivity(sIntent);
-                    break;
+            int id = view.getId();
+            if (id == R.id.bt_on_off) {//prevent double click
+                if (clickedList.contains(relayStatus.getRelay())) {
+                    return;
+                }
+                ((RelayAdapter) recyclerView.getAdapter()).itemChanged(relayStatus.getRelay(), RelayConfig.STATUS_PENDING);
+                clickedList.add(relayStatus.getRelay());
+                ControllerNetRequest netRequest = new ControllerNetRequest(MainActivity.this, new RelayOnClickCallback(relayStatus), relayStatus);
+                if (!isStateUpdated) {
+                    requestList.add(netRequest);
+                } else
+                    netRequest.call();
+                //mockRequest(relayStatus);
+            } else if (id == R.id.iv_settings) {
+                if (relayStatus.getStatus() == RelayConfig.STATUS_PENDING)
+                    return;
+                Intent intent = new Intent(MainActivity.this, RelaySettingActivity.class);
+                intent.putExtra(StringUtils.EXTRA_DATA, relayStatus);
+                startActivityForResult(intent, REQUEST_CHANGE);
+            } else if (id == R.id.rl_alert_container) {
+                Intent aIntent = new Intent(MainActivity.this, ActivityCommonSettings.class);
+                startActivity(aIntent);
+            } else if (id == R.id.iv_schedule) {
+                Intent sIntent = new Intent(MainActivity.this, ActivityScheduling.class);
+                sIntent.putExtra(StringUtils.EXTRA_DATA, relayStatus);
+                startActivity(sIntent);
             }
         }
     }
